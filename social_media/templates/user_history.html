@@ -1,0 +1,26 @@
+{% extends "layout.html" %}
+{% block content %}
+<div class="container mt-4">
+    <h1>{{ user.username }}'s History</h1>
+    {% if history is none %}
+      <p>No history found for this user.</p>
+    {% else %}
+    <table class="table" id="tablee">
+      <thead>
+          <tr>
+              <th>History</th>
+              <th>Date</th>
+          </tr>
+      </thead>
+      <tbody>
+          {% for item in history %}
+          <tr>
+              <td>{{ item[0] }}</td>
+              <td>{{ item[1] }}</td>
+          </tr>
+          {% endfor %}
+      </tbody>
+  </table>
+    {% endif %}
+</div>
+{% endblock content %}

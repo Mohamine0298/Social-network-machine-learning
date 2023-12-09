@@ -1,0 +1,90 @@
+{% extends "layout.html" %}
+{% block content %}
+<div class="container mt-4">
+    <h1>All Users</h1>
+    <table class="table table-striped">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Username</th>
+          <th>Email</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for user in users %}
+          <tr>
+            <td>{{ user.id }}</td>
+            <td>{{ user.username }}</td>
+            <td>{{ user.email }}</td>
+            <td>
+              <form id="delete-form" action="{{ url_for('delete_user', user_id=user.id) }}" method="POST" id="delete-form">
+                <button type="submit" class="btn btn-danger btn-sm btn-custom" onclick="return confirm('Are you sure you want to delete this user?')" style="height: 40px;">Delete</button>
+              </form>
+              <div class="d-flex flex-column">
+              <a href="{{ url_for('user_posts2', user_id=user.id) }}" class="btn btn-primary btn-custom" style="margin-top: 10px; height: 40px;">Posts</a>
+              <a href="{{ url_for('user_history', user_id=user.id) }}" class="btn btn-info btn-custom" style="margin-top: 10px; height: 40px;">History</a>
+              {% if user.prediction_empty() %}
+              <a href="{{ url_for('display_user', user_id=user.id) }}" class="btn btn-secondary btn-custom" style="margin-top: 10px; height: 40px;"> Predict </a>
+              {% else %}
+              <button type="button" class="btn btn-secondary btn-custom" data-toggle="modal" data-target="#history-modal-{{ user.id }}" style="margin-top: 10px; height: 40px;" disabled> Predict </button>
+              {% endif %}
+              {% if user.intrest_empty() %}
+              <button type="button" class="btn btn-success btn-custom d-flex justify-content-center align-items-center" data-toggle="modal" data-target="#interests-modal-{{ user.id }}" style="margin-top: 10px; height: 40px;">Future Interests</button>
+              {% else %}
+              <button type="button" class="btn btn-success btn-custom d-flex justify-content-center align-items-center" data-toggle="modal" data-target="#interests-modal-{{ user.id }}" style="margin-top: 10px; height: 40px;" disabled>Future Interests</button>
+              {% endif %}
+              </div>
+            </td>
+          </tr>
+          <!-- HTML modal window for Future Interests -->
+<div class="modal fade" id="interests-modal-{{ user.id }}" tabindex="-1" role="dialog" aria-labelledby="interests-modal-label-{{ user.id }}" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="interests-modal-label-{{ user.id }}">Future Interests of {{ user.username }}</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        {%if user.future is not none %}
+          {% set my_string = user.future %}
+          {% set my_list = my_string.split(",") %}
+          {% for item in my_list %}
+            {{ item }}<br>
+          {% endfor %}
+        {% endif %}
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+        {% endfor %}
+      </tbody>
+    </table>
+    {% if pagination %}
+      <div class="pagination">
+        {{ pagination.links }}
+      </div>
+    {% endif %}
+  </div>
+  
+{% endblock content %}
+
+{% block scripts %}
+  <script>
+    const deleteForms = document.querySelectorAll('#delete-form');
+    deleteForms.forEach(form => {
+      form.addEventListener('submit', event => {
+        const shouldDelete = confirm("Are you sure you want to delete this user?");
+        if (!shouldDelete) {
+          event.preventDefault();
+        }
+      });
+    });
+  </script>
+{% endblock %}

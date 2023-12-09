@@ -1,0 +1,35 @@
+{% extends "layout.html" %}
+{% block content %}
+    <h1>{{ user.username }}'s Posts</h1>
+    {% if posts %}
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Title</th>
+                    <th>Date Posted</th>
+                    <th>Category</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for post in posts %}
+                <tr>
+                    <td>{{ post.title }}</td>
+                    <td>{{ post.date_posted.strftime('%Y-%m-%d') }}</td>
+                    <td>{{ post.category }}</td>
+                    <td>
+                        <form action="{{ url_for('delete_post2', post_id=post.id) }}" method="post">
+                            <button type="submit" class="btn btn-danger" onclick="return confirm('Are you sure you want to delete this post?')">Delete</button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <div class="pagination mt-3">
+            {{ pagination.links }}
+        </div>
+    {% else %}
+        <p>No posts found.</p>
+    {% endif %}
+{% endblock %}

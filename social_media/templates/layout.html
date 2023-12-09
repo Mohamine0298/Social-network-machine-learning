@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='main.css') }}">
+
+    {% if title %}
+        <title>Flask Blog - {{ title }}</title>
+    {% else %}
+        <title>MySocialNet</title>
+    {% endif %}
+</head>
+<body>
+    <header class="site-header">
+      <nav class="navbar navbar-expand-md navbar-dark bg-steel fixed-top">
+        <div class="container">
+          <a class="navbar-brand mr-4" href="/">MySocialNet</a>
+          <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarToggle" aria-controls="navbarToggle" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+          </button>
+          <div class="collapse navbar-collapse" id="navbarToggle">
+            <div class="navbar-nav mr-auto">
+              <a class="nav-item nav-link" href="{{ url_for('home') }}">Home</a>
+              {% if current_user.is_authenticated %}
+              {% if current_user.id == 1 %}
+                <a class="nav-item nav-link" href="{{ url_for('admin') }}">Admin</a>
+              {% endif %}
+              {% endif %}
+            </div>
+            <!-- Navbar Right Side -->
+            <div class="navbar-nav">
+              {% if current_user.is_authenticated %}
+                <div id="search-bar">
+                <form class="form-inline ml-auto" action="{{ url_for('search') }}" method="POST">
+                <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search" name="q" list="search-options" required>
+                <datalist id="search-options">
+                  <option value="entertainment">
+                  <option value="finance">
+                  <option value="foodanddrink">
+                  <option value="games">
+                  <option value="health">
+                  <option value="kids">
+                  <option value="lifestyle">
+                  <option value="movies">
+                  <option value="news">
+                  <option value="sports">
+                  <option value="tv">
+                  <option value="auto">
+                </datalist>
+                <button class="btn btn-outline-light my-2 my-sm-0" type="submit">Search</button>
+                </form>
+                </div>
+                <img class="rounded-circle" src="{{ url_for('static', filename='profile_pics/' + current_user.image_file) }}" id = "pro-img">
+                <a class="nav-item nav-link" href="{{ url_for('account') }}" style="color: rgb(53, 53, 53);"><b>{{current_user.username}}</b></a>
+              {% else %}
+                <a class="nav-item nav-link" href="{{ url_for('login') }}">Login</a>
+                <a class="nav-item nav-link" href="{{ url_for('register') }}">Register</a>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+      </nav>
+    </header>
+    <main role="main" class="container">
+      <div class="row">
+        <div class="col-md-8">
+          {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+              {% for category, message in messages %}
+                <div class="alert alert-{{ category }}">
+                  {{ message }}
+                </div>
+              {% endfor %}
+            {% endif %}
+          {% endwith %}
+          {% block content %}{% endblock %}
+        </div>
+        {% if current_user.is_authenticated %}
+        <div class="col-md-4">
+          <div class="content-section">
+            <h3 style="text-align:center;">Dashboard</h3>
+            <p class='text-muted'>
+              <ul class="list-group" style="text-align:center;">
+                <li class="list-group-item list-group-item-light"><a class="nav-item nav-link" href="{{ url_for('new_post') }}">New Post</a></li>
+                <li class="list-group-item list-group-item-light"><a class="nav-item nav-link" href="{{ url_for('user_posts', username=current_user.username) }}">My Posts</a></li>
+                <li class="list-group-item list-group-item-light"><a class="nav-item nav-link" href="{{ url_for('account') }}">Profile</a></li>
+                <li class="list-group-item list-group-item-light"><a class="nav-item nav-link" href="{{ url_for('logout') }}">Logout</a></li>
+              </ul>
+            </p>
+          </div>
+        </div>
+        {% else %}
+        <div class="col-md-4">
+          <div class="content-section">
+            <h3 style="text-align:center;">Dashboard</h3>
+            <p class='text-muted'>
+              <ul class="list-group" style="text-align:center;">
+                <li class="list-group-item list-group-item-light">New Post</li>
+                <li class="list-group-item list-group-item-light">My Posts</li>
+                <li class="list-group-item list-group-item-light">My profile</li>
+                <li class="list-group-item list-group-item-light">Logout</li>
+              </ul>
+            </p>
+          </div>
+        </div>
+        {% endif %}
+      </div>
+    </main>
+    <footer class="bg-steel text-white py-3">
+      <div class="container">
+        <div class="row">
+          <div class="col-md-6">
+            <p class="mb-0">MySocialNet &copy; 2023</p>
+          </div>
+          <div class="col-md-6">
+            <ul class="list-inline mb-0 float-md-right">
+              <li class="list-inline-item"><a class="text-white" href="{{ url_for('about') }}">About</a></li>
+              <li class="list-inline-item"><a class="text-white" href="#">Privacy Policy</a></li>
+              <li class="list-inline-item"><a class="text-white" href="https://www.facebook.com/">Contact Us</a></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </footer>
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</body>
+</html>
